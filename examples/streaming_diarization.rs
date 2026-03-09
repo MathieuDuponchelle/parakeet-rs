@@ -21,6 +21,8 @@ use std::env;
 #[cfg(feature = "sortformer")]
 use std::time::Instant;
 
+use parakeet_rs::{Parakeet, ExecutionConfig, ExecutionProvider};
+
 #[allow(unreachable_code)]
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     #[cfg(not(feature = "sortformer"))]
@@ -64,10 +66,12 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         let duration = audio.len() as f32 / 16_000.0;
         println!("Loaded {:.1}s of audio", duration);
 
+        let config = ExecutionConfig::new().with_execution_provider(ExecutionProvider::Cuda);
+
         // Create Sortformer
         let mut sortformer = Sortformer::with_config(
             "diar_streaming_sortformer_4spk-v2.1.onnx",
-            None,
+            Some(config),
             DiarizationConfig::callhome(),
         )?;
 
